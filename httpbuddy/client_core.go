@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/arnocho/http-buddy/httpbuddy/gomime"
 )
 
 const (
@@ -24,10 +26,10 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 	}
 
 	switch strings.ToLower(contentType) {
-	case "application/json":
+	case gomime.ContentTypeJson:
 		return json.Marshal(body)
 
-	case "application/xml":
+	case gomime.ContentTypeXml:
 		return xml.Marshal(body)
 
 	default:
@@ -39,7 +41,7 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*Response, error) {
 	allHeaders := c.getRequestHeaders(headers)
 
-	requestBody, err := c.getRequestBody(allHeaders.Get("Content-Type"), body)
+	requestBody, err := c.getRequestBody(allHeaders.Get(gomime.HeaderContentType), body)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +78,10 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 
 func (c *httpClient) getHttpClient() *http.Client {
 	c.clientOnce.Do(func() {
+		if c.builder.client != nil {
+			c.client = c.builder.client
+			return
+		}
 		c.client = &http.Client{
 			Timeout: c.getConnectionTimeout() + c.getResponseHeaderTimeout(),
 			Transport: &http.Transport{
@@ -116,23 +122,4 @@ func (c *httpClient) getConnectionTimeout() time.Duration {
 		return c.builder.connectionTimeout
 	}
 	return defaultConnectionTimeout
-}
-
-func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
-	result := make(http.Header)
-
-	//Add common headers
-	for header, value := range c.builder.headers {
-		if len(value) > 0 {
-			result.Set(header, value[0])
-		}
-	}
-
-	//Add request headers (overwrites common)
-	for header, value := range requestHeaders {
-		if len(value) > 0 {
-			result.Set(header, value[0])
-		}
-	}
-	return result
 }
