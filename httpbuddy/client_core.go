@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -38,7 +37,7 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 
 }
 
-func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*Response, error) {
+func (c *httpClient) do(method, url string, bypassBotFilter bool, headers http.Header, body interface{}) (*Response, error) {
 	allHeaders := c.getRequestHeaders(headers)
 
 	requestBody, err := c.getRequestBody(allHeaders.Get(gomime.HeaderContentType), body)
@@ -52,6 +51,11 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 	}
 
 	request.Header = allHeaders
+
+	if bypassBotFilter {
+		cookie := &http.Cookie{Name: "bm_sz", Value: "hello"}
+		request.AddCookie(cookie)
+	}
 
 	client := c.getHttpClient()
 
@@ -83,13 +87,9 @@ func (c *httpClient) getHttpClient() *http.Client {
 			return
 		}
 		c.client = &http.Client{
-			Timeout: c.getConnectionTimeout() + c.getResponseHeaderTimeout(),
+			Timeout: c.getConnectionTimeout(),
 			Transport: &http.Transport{
-				MaxIdleConnsPerHost:   c.getMaxIdleConnections(),
-				ResponseHeaderTimeout: c.getResponseHeaderTimeout(),
-				DialContext: (&net.Dialer{
-					Timeout: c.getConnectionTimeout(),
-				}).DialContext,
+				MaxIdleConnsPerHost: c.getMaxIdleConnections(),
 			},
 		}
 	})
@@ -102,16 +102,6 @@ func (c *httpClient) getMaxIdleConnections() int {
 		return c.builder.maxIdleConnections
 	}
 	return defaultMaxIdleConnections
-}
-
-func (c *httpClient) getResponseHeaderTimeout() time.Duration {
-	if c.builder.disableTimeouts {
-		return 0
-	}
-	if c.builder.responseHeaderTimeout > 0 {
-		return c.builder.responseHeaderTimeout
-	}
-	return defaultResponseHeaderTimeout
 }
 
 func (c *httpClient) getConnectionTimeout() time.Duration {

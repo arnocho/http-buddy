@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/arnocho/http-buddy/httpbuddy"
 )
@@ -13,8 +12,7 @@ var (
 
 func getHttpClient() httpbuddy.Client {
 	return httpbuddy.NewBuilder().
-		SetConnectionTimeout(2 * time.Second).
-		SetResponseHeaderTimeout(3 * time.Second).
+		SetUserAgent(gomime.userAgent).
 		Build()
 }
 
@@ -25,7 +23,7 @@ type Endpoint struct {
 }
 
 func Get() {
-	response, err := client.Get("https://api.github.com", nil)
+	response, err := client.Get("https://jobs.louisvuitton.com/fra-fr/careers/jobs", true)
 	if err != nil {
 		panic(err)
 	}
@@ -33,15 +31,19 @@ func Get() {
 	fmt.Println("Status:", response.Status())
 	fmt.Println("Response Body:", response.String())
 
-	var endpoint Endpoint
+	//var endpoint Endpoint
 
-	if err := response.UnmarshalJson(&endpoint); err != nil {
-		panic(err)
-	}
+	//if err := response.UnmarshalJson(&endpoint); err != nil {
+	//	panic(err)
+	//}
 
-	fmt.Println("Repository url:", endpoint.RepositoryURL)
+	//fmt.Println("Repository url:", endpoint.RepositoryURL)
 }
 
 func main() {
+	//req, _ := http.NewRequest("GET", url, nil)
+	//req.Header.Set("User-Agent", userAgent)
+	//cooky := &http.Cookie{Name: "bm_sz", Value: "just_to_bypass_bot_detection"}
+	//req.AddCookie(cooky)
 	Get()
 }

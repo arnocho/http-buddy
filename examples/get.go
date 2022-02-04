@@ -9,7 +9,7 @@ type Endpoint struct {
 }
 
 func GetEndpoint() (*Endpoint, error) {
-	response, err := client.Get("https://api.github.com", nil)
+	response, err := client.Get("https://api.github.com")
 	if err != nil {
 		return nil, err
 	}
