@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/arnocho/http-buddy/httpbuddy"
+	"github.com/arnocho/http-buddy/httpbuddy/gomime"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 
 func getHttpClient() httpbuddy.Client {
 	return httpbuddy.NewBuilder().
-		SetUserAgent(gomime.userAgent).
+		SetUserAgent(gomime.UserAgent).
 		Build()
 }
 
