@@ -24,14 +24,18 @@ type Endpoint struct {
 }
 
 func Get() {
-	response, err := client.Get("https://jobs.louisvuitton.com/fra-fr/careers/jobs", true)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Status Code:", response.StatusCode())
-	fmt.Println("Status:", response.Status())
-	fmt.Println("Response Body:", response.String())
 
+	res, _ := client.CheckForString("https://jobs.louisvuitton.com/fra-fr/careers/jobs", "changeLocation", true)
+	fmt.Println(res)
+	/*
+		response, err := client.Get("https://jobs.louisvuitton.com/fra-fr/careers/jobs", true)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Status Code:", response.StatusCode())
+		fmt.Println("Status:", response.Status())
+		fmt.Println("Response Body:", response.String())
+	*/
 	//var endpoint Endpoint
 
 	//if err := response.UnmarshalJson(&endpoint); err != nil {

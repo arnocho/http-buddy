@@ -37,6 +37,14 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 
 }
 
+func (c *httpClient) checkForString(url string, itemToCheck string, bypassBotFilter bool, headers ...http.Header) (bool, error) {
+	response, err := c.do(http.MethodGet, url, bypassBotFilter, getHeaders(headers...), nil)
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(response.body), itemToCheck), nil
+}
+
 func (c *httpClient) do(method, url string, bypassBotFilter bool, headers http.Header, body interface{}) (*Response, error) {
 	allHeaders := c.getRequestHeaders(headers)
 

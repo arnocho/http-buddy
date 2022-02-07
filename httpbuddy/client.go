@@ -18,6 +18,8 @@ type Client interface {
 	Put(url string, body interface{}, bypassBotFilter bool, headers ...http.Header) (*Response, error)
 	Patch(url string, body interface{}, bypassBotFilter bool, headers ...http.Header) (*Response, error)
 	Delete(url string, bypassBotFilter bool, headers ...http.Header) (*Response, error)
+
+	CheckForString(url string, itemToCheck string, bypassBotFilter bool, headers ...http.Header) (bool, error)
 }
 
 func (c *httpClient) Get(url string, bypassBotFilter bool, headers ...http.Header) (*Response, error) {
@@ -38,4 +40,8 @@ func (c *httpClient) Patch(url string, body interface{}, bypassBotFilter bool, h
 
 func (c *httpClient) Delete(url string, bypassBotFilter bool, headers ...http.Header) (*Response, error) {
 	return c.do(http.MethodDelete, url, bypassBotFilter, getHeaders(headers...), nil)
+}
+
+func (c *httpClient) CheckForString(url string, itemToCheck string, bypassBotFilter bool, headers ...http.Header) (bool, error) {
+	return c.checkForString(url, itemToCheck, bypassBotFilter, headers...)
 }
