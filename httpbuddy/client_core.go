@@ -37,15 +37,15 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 
 }
 
-func (c *httpClient) checkForString(url string, itemToCheck string, bypassBotFilter bool, headers ...http.Header) (bool, error) {
-	response, err := c.do(http.MethodGet, url, bypassBotFilter, getHeaders(headers...), nil)
+func (c *httpClient) checkForString(url string, itemToCheck string, headers ...http.Header) (bool, error) {
+	response, err := c.do(http.MethodGet, url, getHeaders(headers...), nil)
 	if err != nil {
 		return false, err
 	}
 	return strings.Contains(string(response.body), itemToCheck), nil
 }
 
-func (c *httpClient) do(method, url string, bypassBotFilter bool, headers http.Header, body interface{}) (*Response, error) {
+func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*Response, error) {
 	allHeaders := c.getRequestHeaders(headers)
 
 	requestBody, err := c.getRequestBody(allHeaders.Get(gomime.HeaderContentType), body)
@@ -60,10 +60,9 @@ func (c *httpClient) do(method, url string, bypassBotFilter bool, headers http.H
 
 	request.Header = allHeaders
 
-	if bypassBotFilter {
-		cookie := &http.Cookie{Name: "bm_sz", Value: "hello"}
-		request.AddCookie(cookie)
-	}
+	//To keep the interface clean, i put this all the time
+	cookie := &http.Cookie{Name: "bm_sz", Value: "keep_it_clean"}
+	request.AddCookie(cookie)
 
 	client := c.getHttpClient()
 

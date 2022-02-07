@@ -14,6 +14,7 @@ var (
 func getHttpClient() httpbuddy.Client {
 	return httpbuddy.NewBuilder().
 		SetUserAgent(gomime.UserAgent).
+		DisableTimeouts(true).
 		Build()
 }
 
@@ -25,17 +26,17 @@ type Endpoint struct {
 
 func Get() {
 
-	res, _ := client.CheckForString("https://jobs.louisvuitton.com/fra-fr/careers/jobs", "changeLocation", true)
-	fmt.Println(res)
-	/*
-		response, err := client.Get("https://jobs.louisvuitton.com/fra-fr/careers/jobs", true)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Status Code:", response.StatusCode())
-		fmt.Println("Status:", response.Status())
-		fmt.Println("Response Body:", response.String())
-	*/
+	//res, _ := client.CheckForString("https://jobs.louisvuitton.com/fra-fr/careers/jobs", "changeLocation", true)
+	//fmt.Println(res)
+
+	response, err := client.Get("https://servicedesk.orangeapplicationsforbusiness.com/rest/api/2/search")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Status Code:", response.StatusCode())
+	fmt.Println("Status:", response.Status())
+	fmt.Println("Response Body:", response.String())
+
 	//var endpoint Endpoint
 
 	//if err := response.UnmarshalJson(&endpoint); err != nil {
