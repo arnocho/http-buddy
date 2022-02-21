@@ -53,7 +53,7 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 		return nil, err
 	}
 
-	request, err := http.NewRequest(method, url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest(method, url, bytes.NewReader(requestBody))
 	if err != nil {
 		return nil, errors.New("unable to create the request")
 	}
